@@ -1,9 +1,14 @@
 package com.globallogic.irribarra.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +34,9 @@ public class SignUpController {
     @PostMapping
     public ResponseEntity<Object> process(@Valid @RequestBody UserDOM userdata) {
         User user = userdata.toUser();
-        UserDetails ud = new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), true, false, false, false, null);
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+        UserDetails ud = new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), true, false, false, false, roles);
         String token = jwtUtil.generateToken(ud);
         user.setToken(token);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
