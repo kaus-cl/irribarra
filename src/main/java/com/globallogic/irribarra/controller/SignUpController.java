@@ -39,6 +39,7 @@ public class SignUpController {
         UserDetails ud = new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), true, false, false, false, roles);
         String token = jwtUtil.generateToken(ud);
         user.setToken(token);
+        userService.create(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
